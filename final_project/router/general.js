@@ -33,34 +33,56 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books, null, 4));
+    let myGetPromise = new Promise((resolve, reject) => {
+        resolve(JSON.stringify(books, null, 4));
+    });
+
+    myGetPromise.then((successMessage) => {
+        res.send(JSON.stringify(books, null, 4));
+    });
+  
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  const isbn = req.params.isbn;
-  res.send(JSON.stringify(books[isbn]));
+    const isbn = req.params.isbn;
+    let getPromise = new Promise((resolve, reject) => {
+        resolve(JSON.stringify(books[isbn]));
+    }); 
+    getPromise.then((successMessage) => {
+        res.send(successMessage);
+    });
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
-  let booksByAuthor = [];
-  for(var isbn in books) {
-    if (books[isbn].author == author) booksByAuthor.push(books[isbn]);
-  }
-  res.send(JSON.stringify(booksByAuthor));
+    const author = req.params.author;
+    let getPromise = new Promise((resolve, reject) => {
+        let booksByAuthor = [];
+        for(var isbn in books) {
+            if (books[isbn].author == author) booksByAuthor.push(books[isbn]);
+        }
+        resolve(JSON.stringify(booksByAuthor));
+    });
+    getPromise.then((successMessage) => {
+        res.send(successMessage);
+    });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  const title = req.params.title;
-  let booksByTitle = [];
-  for (var isbn in books) {
-    if (books[isbn].title == title) booksByTitle.push(books[isbn]);
-  }
-  res.send(JSON.stringify(booksByTitle));
+    //Write your code here
+    const title = req.params.title;
+    let getPromise = new Promise((resolve, reject) => {
+        let booksByTitle = [];
+        for (var isbn in books) {
+            if (books[isbn].title == title) booksByTitle.push(books[isbn]);
+        }
+        resolve(JSON.stringify(booksByTitle));
+    });
+    getPromise.then((successMessage) => {
+        res.send(successMessage);
+    });
 });
 
 //  Get book review
