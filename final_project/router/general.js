@@ -38,7 +38,7 @@ public_users.get('/',function (req, res) {
     });
 
     myGetPromise.then((successMessage) => {
-        res.send(JSON.stringify(books, null, 4));
+        res.send(successMessage);
     });
   
 });
