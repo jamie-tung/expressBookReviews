@@ -23,9 +23,9 @@ public_users.post("/register", (req,res) => {
         if (!isValid(username)) {
             // Add the new user to the users array
             users.push({"username": username, "password": password});
-            return res.status(200).json({message: "User successfully registered. Now you can login"});
+            return res.status(200).json({message: "Registration is successful. Now you can login"});
         } else {
-            return res.status(404).json({message: "User already exists!"});
+            return res.status(404).json({message: "User with username already exists!"});
         }
     }
     return res.status(404).json({message: "Unable to register user."});
@@ -34,11 +34,11 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
     let myGetPromise = new Promise((resolve, reject) => {
-        resolve(JSON.stringify(books, null, 4));
+        resolve(res.send(JSON.stringify({"books": books }, null, 4)));
     });
 
-    myGetPromise.then((successMessage) => {
-        res.send(successMessage);
+    myGetPromise.then(function() {
+        console.log("Book results delivered to user");
     });
   
 });
@@ -60,9 +60,13 @@ public_users.get('/author/:author',function (req, res) {
     let getPromise = new Promise((resolve, reject) => {
         let booksByAuthor = [];
         for(var isbn in books) {
-            if (books[isbn].author == author) booksByAuthor.push(books[isbn]);
+            if (books[isbn].author == author) {
+                let book = {"isbn":isbn, "title":books[isbn].title, "reviews":books[isbn].reviews};
+                booksByAuthor.push(book);
+            }
+                
         }
-        resolve(JSON.stringify(booksByAuthor));
+        resolve(JSON.stringify({"booksbyauthor":booksByAuthor}));
     });
     getPromise.then((successMessage) => {
         res.send(successMessage);
@@ -76,9 +80,12 @@ public_users.get('/title/:title',function (req, res) {
     let getPromise = new Promise((resolve, reject) => {
         let booksByTitle = [];
         for (var isbn in books) {
-            if (books[isbn].title == title) booksByTitle.push(books[isbn]);
+            if (books[isbn].title == title) {
+                let book = {"isbn":isbn, "author":books[isbn].author, "reviews":books[isbn].reviews};
+                booksByTitle.push(books[isbn]);
+            }
         }
-        resolve(JSON.stringify(booksByTitle));
+        resolve(JSON.stringify({"booksByTitle":booksByTitle}));
     });
     getPromise.then((successMessage) => {
         res.send(successMessage);
