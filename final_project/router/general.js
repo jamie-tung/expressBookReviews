@@ -46,13 +46,19 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
     const isbn = req.params.isbn;
-    let getPromise = new Promise((resolve, reject) => {
-        resolve(JSON.stringify(books[isbn]));
+    const getDetailsPromise = new Promise((resolve, reject) => {
+        try {
+            const success = res.send(JSON.stringify(books[isbn]));
+            resolve(success);
+        } catch(err) {
+            reject(err);
+        }
     }); 
-    getPromise.then((successMessage) => {
-        res.send(successMessage);
-    });
- });
+    getDetailsPromise.then(
+        (success) => console.log("Book by isbn sent to user"),
+        (err) => console.log("Error occured during transfer.") 
+    );
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
@@ -63,14 +69,18 @@ public_users.get('/author/:author',function (req, res) {
             if (books[isbn].author == author) {
                 let book = {"isbn":isbn, "title":books[isbn].title, "reviews":books[isbn].reviews};
                 booksByAuthor.push(book);
-            }
-                
+            } 
         }
-        resolve(JSON.stringify({"booksbyauthor":booksByAuthor}));
+        if (booksByAuthor.length > 0) {
+            resolve(res.send(JSON.stringify({"booksbyauthor":booksByAuthor})));
+        } else {
+            reject(res.send("No books by that author found"));
+        }
     });
-    getPromise.then((successMessage) => {
-        res.send(successMessage);
-    });
+    getPromise.then(
+        (success) => console.log("books by author sent to user"),
+        (failure) => console.log("No books were sent")
+    );
 });
 
 // Get all books based on title
@@ -82,14 +92,19 @@ public_users.get('/title/:title',function (req, res) {
         for (var isbn in books) {
             if (books[isbn].title == title) {
                 let book = {"isbn":isbn, "author":books[isbn].author, "reviews":books[isbn].reviews};
-                booksByTitle.push(books[isbn]);
+                booksByTitle.push(book);
             }
         }
-        resolve(JSON.stringify({"booksByTitle":booksByTitle}));
+        if (booksByTitle.length > 0) {
+            resolve(res.send(JSON.stringify({"booksByTitle":booksByTitle})));
+        } else {
+            reject("No books by this title were found");
+        }
     });
-    getPromise.then((successMessage) => {
-        res.send(successMessage);
-    });
+    getPromise.then(
+        (success) => console.log("Books with title sent to user"),
+        (failure) => console.log("No books were sent to the user.")
+    );
 });
 
 //  Get book review
